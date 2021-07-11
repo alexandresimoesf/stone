@@ -33,15 +33,3 @@ writer.writeheader()
 for i, j in dd.items():
     writer.writerow({'Município': i, 'Valor': sum(j[:-2]) / j[-1]})
 resposta_nb.close()
-
-# r = requests.get("https://www.br.undp.org/content/brazil/pt/home/idh0/rankings/idhm-municipios-2010.html")
-# df_list = read_html(r.text)
-# df = df_list[0][['Município', 'IDHM 2010']]
-# for index, row in df.iterrows():
-#     print(' '.join(row['Município'].split()[:-1]), row['Município'].split()[-1], row['IDHM 2010'])
-
-
-# r = requests.get("https://www.teleco.com.br/nceluf.asp")
-# df_list = read_html(r.text)
-# df = df_list[-4][[(      'Estado',      'Estado'), ('Maio de 2021',  'Pré  Pagos')]]
-# print(df.head())
