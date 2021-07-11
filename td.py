@@ -76,8 +76,6 @@ for index, row in df_idh.iterrows():
     try:
         incorporador[unidecode.unidecode(' '.join(row['Município'].split()[:-1])).upper()].append(
             float((row['IDHM 2010']) / 1000))
-        # incorporador[unidecode.unidecode(' '.join(row['Município'].split()[:-1])).upper()].append(
-        #     coef(int(dados[unidecode.unidecode(' '.join(row['Município'].split()[:-1])).upper()])))
     except:
         pass
 
@@ -93,15 +91,24 @@ for i, j in densidade_pos_pago_estado.items():
     # Adicionar densidade por estado em populacao_estadual [populacao total, densidade]
     populacao_estadual[i].append(j[0])
 
-# for i, j in incorporador.items():
-#     densidade = densidade_pos_pago_estado[j[0]] if j and len(j) > 0 else ''
-#     incorporador[i].append(densidade[0] if len(densidade) > 0 else '')
-#
 for i, j in incorporador.items():
     preparar_calculo[i] = j + populacao_estadual[j[0]]
-    # [estado atrelado com populacao estadual e densidade, populacao municipal, coeficiente, idh]
 
+#   SAO PAULO ['SP', 12325232, 25, 0.805, 46289333, 46896]
 for i, j in preparar_calculo.items():
-    print(i, j)
+    # print(i, j)
+    if len(j) == 6:
+        print(i, j[0], ': cidade e estado')
+        print(j[1], ': populacao municipal')
+        print(j[-2], ': populacao estadual')
+        print(j[-1], ': densidade')
+        print(j[2], ': cp')
+        td = (j[-1] / j[-2]) * 1000
+        print(td, ': TD')
+        pc = ((j[3] ** j[2]) * (td/1.5))
+        print(pc, ': PC')
+        print(round(pc * j[1]), ': numero de clientes convertidos')
+        print('#' * 10)
+
 # for i, j in populacao_estadual.items():
 #     print(i, j)
