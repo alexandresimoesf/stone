@@ -34,21 +34,16 @@ def coef(n):
 #     print(' '.join(row['Município'].split()[:-1]), row['Município'].split()[-1], row['IDHM 2010'])
 #
 #
-def pos_pagos(cel, pre):
-    if str(cel)[::-1].find('.') == 1:
-        cel = int(cel)
+def pos_pagos(n):
+    if str(n)[::-1].find('.') == 1:
+        n = int(n)
     else:
-        cel = str("%.3f" % cel).replace('.', '_') if '.' in str("%.3f" % cel) else str("%.3f" % cel)
-    if str(pre)[::-1].find('.') == 1:
-        pre = int(pre)
-    else:
-        pre = str("%.3f" % pre).replace('.', '_') if '.' in str("%.3f" % pre) else str("%.3f" % pre)
-
-    return int(cel) - int(pre)
+        n = str("%.3f" % n).replace('.', '_') if '.' in str("%.3f" % n) else str("%.3f" % n)
+    return int(n)
 
 
 r = requests.get("https://www.teleco.com.br/nceluf.asp")
 df_list = read_html(r.text)
 df = df_list[-4][[(      'Estado',      'Estado'), (        'Maio de 2021',              'Nº Cel.'), ('Maio de 2021',  'Pré  Pagos')]]
 for index, row in df.iterrows():
-    print(row[(      'Estado',      'Estado')], pos_pagos(row[(        'Maio de 2021',              'Nº Cel.')], row[('Maio de 2021',  'Pré  Pagos')]))
+    print(row[(      'Estado',      'Estado')], pos_pagos(row[(        'Maio de 2021',              'Nº Cel.')]) - pos_pagos(row[('Maio de 2021',  'Pré  Pagos')]))
