@@ -1,4 +1,4 @@
-from pandas import read_excel, read_html
+from pandas import read_html
 from collections import defaultdict
 import unidecode
 import csv
@@ -67,7 +67,6 @@ for index, row in df_populacao.iterrows():
 for i, j in populacao_estadual.items():
     populacao_estadual[i] = [sum(j)]
 
-
 r = requests.get("https://www.br.undp.org/content/brazil/pt/home/idh0/rankings/idhm-municipios-2010.html")
 df_list = read_html(r.text)
 df_idh = df_list[0][['Município', 'IDHM 2010']]
@@ -85,30 +84,26 @@ df_list = read_html(r.text)
 df_pos_pagos = df_list[-4][[('Estado', 'Estado'), ('Maio de 2021', 'Nº Cel.'), ('Maio de 2021', 'Pré  Pagos')]]
 for index, row in df_pos_pagos.iterrows():
     estado = uf(unidecode.unidecode(row[('Estado', 'Estado')]).upper().split())
-    densidade_pos_pago_estado[estado[-1]].append((pos_pagos(row[('Maio de 2021', 'Nº Cel.')]) - pos_pagos(row[('Maio de 2021', 'Pré  Pagos')])))
+    densidade_pos_pago_estado[estado[-1]].append(
+        (pos_pagos(row[('Maio de 2021', 'Nº Cel.')]) - pos_pagos(row[('Maio de 2021', 'Pré  Pagos')])))
 
 for i, j in densidade_pos_pago_estado.items():
-    # Adicionar densidade por estado em populacao_estadual [populacao total, densidade]
     populacao_estadual[i].append(j[0])
 
 for i, j in incorporador.items():
     preparar_calculo[i] = j + populacao_estadual[j[0]]
 
-#   SAO PAULO ['SP', 12325232, 25, 0.805, 46289333, 46896]
+resposta_pc = open('pc.csv', 'w', newline='')
+campos = ['cidade e estado', 'populacao municipal', 'populacao estadual',
+          'numero de pos pagos', 'cp', 'TD', 'PC', 'numero de clientes convertidos']
+writer = csv.DictWriter(resposta_pc, fieldnames=campos)
+writer.writeheader()
 for i, j in preparar_calculo.items():
-    # print(i, j)
     if len(j) == 6:
-        print(i, j[0], ': cidade e estado')
-        print(j[1], ': populacao municipal')
-        print(j[-2], ': populacao estadual')
-        print(j[-1], ': densidade')
-        print(j[2], ': cp')
         td = (j[-1] / j[-2]) * 1000
-        print(td, ': TD')
-        pc = ((j[3] ** j[2]) * (td/1.5))
-        print(pc, ': PC')
-        print(round(pc * j[1]), ': numero de clientes convertidos')
-        print('#' * 10)
+        pc = ((j[3] ** j[2]) * (td / 1.5))
+        writer.writerow({'cidade e estado': i + '/' + j[0], 'populacao municipal': j[1], 'populacao estadual': j[-2],
+                         'numero de pos pagos': j[-1],
+                         'cp': j[2], 'TD':'%.3f' % td, 'PC': '%.3f' %pc, 'numero de clientes convertidos': round(pc * j[1])})
 
-# for i, j in populacao_estadual.items():
-#     print(i, j)
+resposta_pc.close()
